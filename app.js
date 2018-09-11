@@ -1,24 +1,28 @@
 var smtableApp = angular.module('smtableApp', []);
 
-smtableApp.controller("typeController", function ($scope) {
-  $scope.typeMale = true;
-  $scope.typeFemale = true;
+smtableApp.controller("homePageController", ["$scope", "dataProvider", function ($scope, dataProvider) {
 
-  $scope.changeType = function() {
-    console.log($scope.typeMale, $scope.typeFemale);
-  }
-});
-
-smtableApp.controller("searchController", function ($scope) {
-  $scope.searchText = this.searchText = "";
-});
+  $scope.toggleSexTypeSelection = function toggleSexTypeSelection(sexType) {
+    if (_.includes($scope.selectedSexTypes, sexType)) {
+      _.pull($scope.selectedSexTypes, sexType);
+    } else {
+      $scope.selectedSexTypes.push(sexType);
+    }
+  };
 
 
-smtableApp.directive("smtable", function(dataProvider) {
+  dataProvider.getList(function(persons) {
+    $scope.persons = persons;
+
+    $scope.sexTypes = _.chain(persons).map("sex").uniq().value();
+    $scope.selectedSexTypes = _.clone($scope.sexTypes);
+  });
+
+}]);
+
+
+smtableApp.directive("smtable", function() {
   return function(scope, element, attrs) {
-    dataProvider.getList(function(persons) {
-      scope.persons = persons;
-    });
 
     // sorting
 
@@ -41,5 +45,21 @@ smtableApp.filter("ageFormatter", function() {
     var now = new Date();
 
     return Math.abs(now.getUTCFullYear() - birthdayDate.getUTCFullYear());
+  }
+});
+
+smtableApp.filter("sexFilter", function() {
+  return function(list, selectedSexTypes) {
+
+    return _.filter(list, function(item) {
+      return _.includes(selectedSexTypes, item.sex);
+    });
+
+  }
+});
+
+smtableApp.filter('capitalizeFirstChar', function() {
+  return function(input) {
+    return _.upperFirst(input);
   }
 });

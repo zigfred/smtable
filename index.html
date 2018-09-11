@@ -7,45 +7,45 @@
     <link rel="stylesheet" href="app.css">
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
 </head>
-<body>
+<body ng-controller="homePageController">
 
-<h1>s</h1>
-<h2>List</h2>
-<div ng-controller="typeController">
-    <div class="form-check form-check-inline">
-        <input ng-model="typeMale" ng-change="changeType()" class="form-check-input" type="checkbox" id="typeMaleCheckbox" value="male">
-        <label class="form-check-label" for="typeMaleCheckbox">Male</label>
+    <h1>s</h1>
+    <h2>List</h2>
+
+    <div>
+        <div ng-repeat="sexType in sexTypes" class="form-check form-check-inline">
+            <input type="checkbox" name="selectedSexTypes" value="{{sexType}}"
+                   ng-checked="!_.includes(selectedSexTypes, sexType)"
+                   ng-click="toggleSexTypeSelection(sexType)"
+                   class="form-check-input" id="{{sexType}}SexTypeCheckbox">
+            <label class="form-check-label" for="{{sexType}}SexTypeCheckbox">{{sexType | capitalizeFirstChar}}</label>
+        </div>
     </div>
-    <div class="form-check form-check-inline">
-        <input ng-model="typeFemale" ng-change="changeType()" class="form-check-input" type="checkbox" id="typeFemaleCheckbox" value="female">
-        <label class="form-check-label" for="typeFemaleCheckbox">Female</label>
+
+    <div class="input-group mb-3">
+        <input ng-model="searchText" type="text" class="form-control" placeholder="Search">
     </div>
 
-
-</div>
-<div class="input-group mb-3">
-    <input ng-model="searchText" type="text" class="form-control" placeholder="Search">
-</div>
-<table smtable class="table table-hover">
-    <thead>
-    <tr>
-        <th scope="col">#</th>
-        <th scope="col">First Name</th>
-        <th scope="col">Last Name</th>
-        <th scope="col">Age</th>
-        <th scope="col">Sex</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-repeat="person in persons | filter:searchText">
-        <th scope="row">{{person.id}}</th>
-        <td>{{person.firstName}}</td>
-        <td>{{person.lastName}}</td>
-        <td>{{person.birthday | ageFormatter}}</td>
-        <td><img ng-src="icons8-{{person.sex}}-26.png"/></td>
-    </tr>
-    </tbody>
-</table>
+    <table smtable class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Age</th>
+            <th scope="col">Sex</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="person in persons | filter:searchText | sexFilter:selectedSexTypes">
+            <th scope="row">{{person.id}}</th>
+            <td>{{person.firstName}}</td>
+            <td>{{person.lastName}}</td>
+            <td>{{person.birthday | ageFormatter}}</td>
+            <td><img ng-src="icons8-{{person.sex}}-26.png"/></td>
+        </tr>
+        </tbody>
+    </table>
 
 
 
